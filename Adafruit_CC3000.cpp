@@ -1298,6 +1298,7 @@ size_t Adafruit_CC3000_Client::write(uint8_t c)
 
 size_t Adafruit_CC3000_Client::fastrprint(const __FlashStringHelper *ifsh)
 {
+  char _tx_buf[TXBUFFERSIZE];
   uint8_t idx = 0;
 
   const char PROGMEM *p = (const char PROGMEM *)ifsh;
