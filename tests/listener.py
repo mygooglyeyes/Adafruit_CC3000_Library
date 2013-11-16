@@ -2,17 +2,23 @@
 # Created by Tony DiCola (tony@tonydicola.com)
 # Released with the same license as the Adafruit CC3000 library (BSD)
 
-# Create a simple server to listen by default on port 9000 (or on the port specified in
-# the first command line parameter), accept any connections and print all data received
-# to standard output.  Must be terminated by hitting ctrl-c to kill the process!
+# Create a simple server to listen by default on port 9000, accept any connections 
+# and print all data received to standard output.  Can optionally echo received 
+# data to the connected client.  Run at command line with -h option to see available 
+# arguments.  Must be terminated by hitting ctrl-c to kill the process!
 
+import argparse
 from socket import *
 import sys
 import threading
 
-SERVER_PORT = 9000
-if len(sys.argv) > 1:
-	SERVER_PORT = sys.argv[1]
+# Parse command line parameters
+parser = argparse.ArgumentParser(description='Adafruit CC3000 Library Test Listener')
+parser.add_argument('-p', '--port', dest='port', type=int, default=9000, 
+					help='port for listening for TCP connections')
+parser.add_argument('-e', '--echo', dest='echo', action='store_true', default=False, 
+					help='echo the data received back out to the client')
+args = parser.parse_args()
 
 # Create listening socket
 server = socket(AF_INET, SOCK_STREAM)
@@ -22,17 +28,19 @@ server = socket(AF_INET, SOCK_STREAM)
 server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 
 # Listen on any network interface for the specified port
-server.bind(('', SERVER_PORT))
+server.bind(('', args.port))
 server.listen(5)
 
 # Worker process to print all data received to standard output.
 def process_connection(client):
 	while True:
 		data = client.recv(1024)
-		sys.stdout.write(data) # Don't use print because it appends spaces and newlines
-		sys.stdout.flush()
 		if not data: 
 			break
+		sys.stdout.write(data) # Don't use print because it appends spaces and newlines
+		sys.stdout.flush()
+		if args.echo:
+			client.send(data)
 	client.close()
 
 try:
@@ -40,6 +48,7 @@ try:
 	while True:
 		client, address = server.accept()
 		thread = threading.Thread(target=process_connection, args=(client,))
+		thread.setDaemon(True)
 		thread.start()
 except:
 	server.close()
