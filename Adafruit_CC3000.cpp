@@ -47,6 +47,12 @@ static const uint8_t dreqinttable[] = {
   20, 3,
   19, 4,
   18, 5,
+// Support for the ATmega1284P processor based on the popular 'Mighty 1284P' board pinout documented here: 
+// https://github.com/maniacbug/mighty-1284p/
+#elif defined(__AVR_ATmega1284P__)
+  10, 0,
+  11, 1,
+  2, 2,
 #elif  defined(__AVR_ATmega32U4__) && defined(CORE_TEENSY)
   5, 0,
   6, 1,
