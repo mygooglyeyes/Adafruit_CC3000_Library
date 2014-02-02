@@ -33,7 +33,7 @@
 #if defined(__arm__) && defined(__SAM3X8E__) // Arduino Due
   #define SPI_CLOCK_DIVIDER 6 // used to set the speed for the SPI bus; 6 == 14 Mhz on the Arduino Due
 #else
-  #define SPI_CLOCK_DIVIDER SPI_CLOCK_DIV128
+  #define SPI_CLOCK_DIVIDER SPI_CLOCK_DIV2 // Don't set this much slower (i.e. larger divider) or there could be communication issues on 16mhz chips!
 #endif
 
 #if defined(UDR0) || defined(UDR1) || defined(CORE_TEENSY) || ( defined (__arm__) && defined (__SAM3X8E__) )
